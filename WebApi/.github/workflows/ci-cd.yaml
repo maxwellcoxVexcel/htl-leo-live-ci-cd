@@ -1,0 +1,26 @@
+name: Continuous Integration and Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs: # More complex projects might have multiple jobs
+  build: # This is the job name
+    runs-on: ubuntu-latest # Specify which platform the build will run on. We can select which operating system and version we would like to use
+    steps:  # There are lots of options with this (Enivronemnts, secrets, multiple platforms, strategy matrices) READ THE DOCUMENTATION FOR THIS!
+      # Which steps are available 
+      - name: Check out code
+        uses: actions/checkout@v3 # https://github.com/marketplace/actions/checkout
+      
+      - name: Setup .Net 6
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x' # SDK Version to use; x will use the latest version of the 6.0 channel
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build app
+        run: dotnet build -c Release --no-restore
+        
