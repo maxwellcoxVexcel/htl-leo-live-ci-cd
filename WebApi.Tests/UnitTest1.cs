@@ -8,6 +8,7 @@ namespace WebApi.Tests
         public void Test1()
         {
             Assert.True(1 == 1);
+            
         }
     }
 }
