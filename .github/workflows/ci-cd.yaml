@@ -23,4 +23,7 @@ jobs: # More complex projects might have multiple jobs
 
       - name: Build app
         run: dotnet build -c Release --no-restore
+
+      - name: Ran automated tests # Runs our unit tests after our build
+        run: dotnet test -c Release --no-build
         
