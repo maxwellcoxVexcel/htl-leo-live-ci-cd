@@ -34,6 +34,9 @@ jobs: # More complex projects might have multiple jobs
     
       # ------- CD ---------
 
+      - name: Check out code
+        uses: actions/checkout@v3 # https://github.com/marketplace/actions/checkout
+      
       # AWS Credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
