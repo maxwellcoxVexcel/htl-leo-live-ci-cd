@@ -5,11 +5,16 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs: # More complex projects might have multiple jobs
   build: # This is the job name
     runs-on: ubuntu-latest # Specify which platform the build will run on. We can select which operating system and version we would like to use
     steps:  # There are lots of options with this (Enivronemnts, secrets, multiple platforms, strategy matrices) READ THE DOCUMENTATION FOR THIS!
-      # Which steps are available 
+      
+      # ------ CI --------
       - name: Check out code
         uses: actions/checkout@v3 # https://github.com/marketplace/actions/checkout
       
@@ -26,4 +31,27 @@ jobs: # More complex projects might have multiple jobs
 
       - name: Run automated tests # Runs our unit tests after our build
         run: dotnet test -c Release --no-build
+    
+      # ------- CD ---------
+
+      # AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::625319941692:role/github-actions-role
+          aws-region: us-east-1
+
+      # Logging in to Amazon ECR Private, then building and pushing a Docker Image
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ecr-practice
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         
